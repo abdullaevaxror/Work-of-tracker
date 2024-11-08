@@ -1,67 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work of Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Work Of Tracker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
-<body class="bg-warning-subtle">
-    <div class="container bg-warning-subtle">
-        <h1 class="text-danger text-center">Work of Tracker</h1>
-        
-        <form method="post">
-            <div class="mb-3">
-                <label for="name" class="form-label">Ism</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Ismingizni kiriting">
-            </div>
-            <div class="mb-3">
-                <label for="arrived_at" class="form-label">Kelgan vaqt</label>
-                <input type="datetime-local" class="form-control" id="arrived_at" name="arrived_at">
-            </div>
-            <div class="mb-3">
-                <label for="leaved_at" class="form-label">Ketgan vaqt</label>
-                <input type="datetime-local" class="form-control" id="leaved_at" name="leaved_at">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-        
-        <table class="table table-"><br>
-            
-        <div class="col-auto">
+<body class="">
+<div class="container">
+    <h1 class="text-primary text-center mt-4">Work Of Tracker</h1>
+    <div class="row align-items-end my-3">
+        <div class="col">
+            <form method="post" class="row g-3 mt-3 align-items-end">
+                <div class="col-auto">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" class="form-control" id="name">
+                </div>
+                <div class="col-auto">
+                    <label for="arrived_at">Arrived At</label>
+                    <input type="datetime-local" name="arrived_at" class="form-control" id="arrived_at">
+                </div>
+                <div class="col-auto">
+                    <label for="leaved_at">Leaved At</label>
+                    <input type="datetime-local" name="leaved_at" class="form-control" id="leaved_at">
+                </div>
+
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+
+                <div class="col-auto">
                     <button form="export" type="submit" class="btn btn-success">Export</button>
                 </div>
+
             </form>
-            <form action="" id="export" method="post">
+
+            <form action="download.php" id="export" method="post">
                 <input type="text" name="export" value="true" hidden="">
-        
-            <thead>
-                <tr>
-                    <th class='text-danger'>#</th>
-                    <th class='text-danger'>Ism</th>
-                    <th class='text-danger'>Keldi</th>
-                    <th class='text-danger'>Ketdi</th>
-                    <th class='text-danger'>Qarzdorlik</th>
-                    <th class='text-danger' scope="col">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                
-                global $records;
-                foreach ($records as $record) {
-                    echo "<tr>
-                    <th class='text-danger'>{$record['id']}</th>
-                    <td class='text-primary'>{$record['name']}</td>
-                    <td class='text-primary'>{$record['arrived_at']}</td>
-                    <td class='text-primary'>{$record['leaved_at']}</td>
-                    <td class='text-primary'>" . gmdate('H:i',$record['required_of']) . "</td>
-                    <td class='text-primary'><a href='index.php?done=" . $record['id'] . "'>Done</a></td>
-                </tr>";
-                }
-                ?>
-            </tbody>
-        </table>
+            </form>
+
+        </div>
     </div>
+    <table class="table table-primary table-hover">
+        <thead>
+        <tr class="table-secondary">
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Arrived At</th>
+            <th scope="col">Leaved At</th>
+            <th scope="col">Required work</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        global $records;
+        $i = isset($_GET['page']) ? (int)$_GET['page'] : 0;
+        foreach ($records as $record) {
+            $i++;
+            echo "<tr>
+                <td>{$i}</td>
+                <td>{$record['name']}</td>
+                <td>{$record['arrived_at']}</td>
+                <td>{$record['leaved_at']}</td>
+                <td>" . gmdate('H:i', $record['required_of']) . "</td>
+                <td><a href='index.php?done=" . $record['id'] . "'>Done</a></td>
+            </tr>";
+        }
+
+        ?>
+        </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <?php
+            global $workDay, $currentPage;
+            $disabled = $currentPage == 1 ? "disabled" : "";
+
+            ?>
+            <li class="page-item <?=$disabled?>"><a class="page-link" href="#">Previous</a></li>
+            <?php
+            $pageCount = $workDay->calculatePageCount();
+            for ($page = 1; $page <= $pageCount; $page++) {
+                $active = $page == $currentPage ? "active" : "";
+                echo "<li class='page-item $active''><a class='page-link'' href='index.php?page=" . $page . "''>" . $page . "</a></li>";
+            }
+
+            ?>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+    </nav>
+</div>
+
+
 </body>
 </html>
+<!-- bg-warning-subtle -->

@@ -8,9 +8,13 @@ if (isset($_POST['name']) && isset($_POST['arrived_at']) && isset($_POST['leaved
         $workDay->store($_POST['name'], $_POST['arrived_at'], $_POST['leaved_at']);
     }
 }
-$records = $workDay->getWorDayList();
 
-if (isset($_GET['done']) and !empty($_GET['done'])) {
+$currentPage = isset($_GET['page']) ? $_GET['page'] : 0;
+$records = $workDay->getWorkDayListWithPagination($currentPage);
+
+
+$debt = $workDay->calculateDebtTimeForEachuser();
+if (isset($_GET['done']) && !empty($_GET['done'])) {
     $workDay->markAsDone($_GET['done']);
 }
 

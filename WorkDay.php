@@ -41,11 +41,11 @@ class WorkDay
 
         $this->total = ((self::REQUIRED_HOUR_DURATION * 3600) - (($hour * 3600) + ($minute * 60)));
     }
-    public function getWorDayList()
+    public function getWorkDayList()
     {
-        $query = "SELECT * FROM work_time";
+        $query = "SELECT * FROM work_time ORDER BY arrived_at DESC";
         $stmt = $this->pdo->query($query);
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public function calculateDebtTimeForEachuser () {
         $query = "SELECT name, SUM(required_of) as debt FROM work_time GROUP BY name";
@@ -58,5 +58,21 @@ class WorkDay
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         header('Location: index.php'); 
+    }
+    public function getWorkDayListWithPagination (int $offset) {
+        $offset = $offset ? ($offset * 10) - 10 : 0;
+        $query = "SELECT * FROM work_time ORDER BY arrived_at DESC LIMIT 10 OFFSET " . $offset;
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getTotalRecords () {
+        $query = "SELECT COUNT(id) as pageCount FROM work_time";
+        $stmt = $this->pdo->query($query);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function calculatePageCount () {
+        $total = $this->getTotalRecords()['pageCount'];
+        return ceil($total/10);
     }
 }
