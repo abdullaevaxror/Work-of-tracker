@@ -28,7 +28,7 @@
                         <label for="leaved_at">Leaved At</label>
                         <input type="datetime-local" name="leaved_at" class="form-control" id="leaved_at">
                     </div>
-                    d
+                    
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary">Send</button>
                     </div>
